@@ -60,7 +60,7 @@ class Plugin:
         Args:
             options (dict): options to be parsed
         """
-        cls.isolated_imports = getattr(options, cls.full_option_name)
+        cls._isolated_imports = getattr(options, cls.full_option_name)
 
     def __init__(self, tree: ast.AST, filename: str) -> None:
         self._filename = filename
@@ -70,7 +70,7 @@ class Plugin:
         """
         Any module from specified package could not be import in another package
         """
-        visitor = Visitor(self._filename, self.isolated_imports)
+        visitor = Visitor(self._filename, self._isolated_imports)
         visitor.visit(self._tree)
         for line, col in visitor.errors:
             yield line, col, MESSAGE, type(self)
