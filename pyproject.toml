@@ -8,6 +8,5 @@ authors = ["Dudov Dmitry (@ddmitiy)"]
 python = "^3.7"
 flake8 = "^3.8.4"
 astpretty = "^2.1.0"
-
-[tool.poetry.dev-dependencies]
 pytest = "^6.2.2"
+
