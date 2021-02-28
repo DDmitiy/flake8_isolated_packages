@@ -12,7 +12,7 @@ This *Flake8* plugin is for checking imports isolations.
 2. Configure a mark that you would like to validate::
 
         cd project_root/
-        vi .flake8
+        vi setup.cfg
 
 3. Add to file following: 
    
@@ -23,3 +23,15 @@ This *Flake8* plugin is for checking imports isolations.
 3. Run flake8::
 
         flake8 .
+
+# flake8 codes
+
+* FIP100: You try to import from isolated package`
+
+# Settings
+
+**isolated_packages**  
+It specifies a list of folders, that cannot be imported outside of their package
+
+**test_folders**
+It specifies a list of folders, that contains tests and in which can be imported something from even isolated packages

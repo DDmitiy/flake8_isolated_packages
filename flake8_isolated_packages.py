@@ -8,7 +8,7 @@ else:
     import importlib.metadata as importlib_metadata
 
 
-MESSAGE = 'FII100 You try to import from another service'
+MESSAGE = 'FIP100: You try to import from isolated package'
 
 
 class Visitor(ast.NodeVisitor):
