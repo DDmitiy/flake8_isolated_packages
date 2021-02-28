@@ -1,0 +1,11 @@
+[tool.poetry]
+name = "flake8_isolated_packages"
+version = "0.1.0"
+description = "This Flake8 plugin is for checking imports isolations."
+authors = ["Dudov Dmitry (@ddmitiy)"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+flake8 = "^3.8.4"
+astpretty = "^2.1.0"
+pytest = "^6.2.2"
