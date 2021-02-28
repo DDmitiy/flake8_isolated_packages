@@ -20,17 +20,3 @@ def import_from_service_module() -> str:
 def import_from_nested_service_module() -> str:
     return 'from service.utils import function'
 
-
-@pytest.fixture()
-def root_module_filename() -> str:
-    return
-
-
-@pytest.fixture()
-def common_module_filename() -> str:
-    return
-
-
-@pytest.fixture()
-def service_module_filename() -> str:
-    return

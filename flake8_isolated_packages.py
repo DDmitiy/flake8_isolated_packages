@@ -12,12 +12,17 @@ MESSAGE = 'FII100 You try to import from another service'
 
 
 class Visitor(ast.NodeVisitor):
-    def __init__(self, filename: str, isolated_packages: List[str]) -> None:
+    def __init__(self, filename: str, isolated_packages: List[str], test_folders: List['str']) -> None:
         self.package_name = self._get_package_name(filename)
         self.errors: List[Tuple[int, int]] = []
         self.isolated_packages = isolated_packages
+        self.test_folders = test_folders
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        if self.package_name in self.test_folders:
+            self.generic_visit(node)
+            return
+
         root_import_package_name = node.module.split('.')[0]
         if (root_import_package_name in self.isolated_packages
                 and root_import_package_name != self.package_name):
@@ -39,8 +44,9 @@ class Visitor(ast.NodeVisitor):
 class Plugin:
     name = __name__
     version = importlib_metadata.version(__name__)
-    short_option_name = 'fii'
-    full_option_name = 'isolated_packages'
+
+    isolated_packages_option_name = 'isolated_packages'
+    test_folders_option_name = 'test_folders'
 
     @classmethod
     def add_options(cls, parser):
@@ -49,9 +55,20 @@ class Plugin:
         Args:
             parser (OptionsManager):
         """
-        kwargs = {'action': 'store', 'default': '', 'parse_from_config': True,
+        kwargs = {'action': 'store', 'parse_from_config': True,
                   'comma_separated_list': True}
-        parser.add_option(f'-{cls.short_option_name}', f'--{cls.full_option_name}', **kwargs)
+        parser.add_option(
+            f'-{cls.isolated_packages_option_name}',
+            f'--{cls.isolated_packages_option_name}',
+            default='',
+            **kwargs
+        )
+        parser.add_option(
+            f'-{cls.test_folders_option_name}',
+            f'--{cls.test_folders_option_name}',
+            default='tests',
+            **kwargs
+        )
 
     @classmethod
     def parse_options(cls, options):
@@ -60,7 +77,8 @@ class Plugin:
         Args:
             options (dict): options to be parsed
         """
-        cls._isolated_packages = getattr(options, cls.full_option_name)
+        cls._isolated_packages = getattr(options, cls.isolated_packages_option_name)
+        cls._test_folders = getattr(options, cls.test_folders_option_name)
 
     def __init__(self, tree: ast.AST, filename: str) -> None:
         self._filename = filename
@@ -70,7 +88,7 @@ class Plugin:
         """
         Any module from specified package could not be import in another package
         """
-        visitor = Visitor(self._filename, self._isolated_packages)
+        visitor = Visitor(self._filename, self._isolated_packages, self._test_folders)
         visitor.visit(self._tree)
         for line, col in visitor.errors:
             yield line, col, MESSAGE, type(self)
