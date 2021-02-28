@@ -1,5 +1,5 @@
 import ast
-from typing import Set
+from typing import List
 
 import pytest
 
@@ -9,13 +9,15 @@ ERROR_CODE = 'FII100'
 ROOT_MODULE_FILENAME = './utils.py'
 COMMON_MODULE_FILENAME = './common/utils.py'
 SERVICE_MODULE_FILENAME = './service/utils.py'
+TEST_MODULE_FILENAME = './tests/conftest.py'
 
 
-def _result(loc: str, filename: str) -> Set[str]:
+def _result(loc: str, filename: str) -> List[str]:
     tree = ast.parse(loc)
     plugin = Plugin(tree, filename)
     plugin._isolated_packages = ['service']
-    return {f'{line}:{col} {message}' for line, col, message, _ in plugin.run()}
+    plugin._test_folders = ['tests']
+    return [f'{line}:{col} {message}' for line, col, message, _ in plugin.run()]
 
 
 @pytest.mark.parametrize(
@@ -23,13 +25,14 @@ def _result(loc: str, filename: str) -> Set[str]:
         (ROOT_MODULE_FILENAME, False),
         (COMMON_MODULE_FILENAME, False),
         (SERVICE_MODULE_FILENAME, False),
+        (TEST_MODULE_FILENAME, False),
     ]
 )
 def test_import_from_common_module(import_from_common_module, filename, has_error):
     check_res = _result(import_from_common_module, filename)
     if has_error:
         assert len(check_res) == 1
-        assert ERROR_CODE in list(check_res)[0]
+        assert ERROR_CODE in check_res[0]
     else:
         assert not check_res
 
@@ -39,13 +42,14 @@ def test_import_from_common_module(import_from_common_module, filename, has_erro
         (ROOT_MODULE_FILENAME, False),
         (COMMON_MODULE_FILENAME, False),
         (SERVICE_MODULE_FILENAME, False),
+        (TEST_MODULE_FILENAME, False),
     ]
 )
 def test_import_from_nested_common_module(import_from_nested_common_module, filename, has_error):
     check_res = _result(import_from_nested_common_module, filename)
     if has_error:
         assert len(check_res) == 1
-        assert ERROR_CODE in list(check_res)[0]
+        assert ERROR_CODE in check_res[0]
     else:
         assert not check_res
 
@@ -55,13 +59,14 @@ def test_import_from_nested_common_module(import_from_nested_common_module, file
         (ROOT_MODULE_FILENAME, True),
         (COMMON_MODULE_FILENAME, True),
         (SERVICE_MODULE_FILENAME, False),
+        (TEST_MODULE_FILENAME, False),
     ]
 )
 def test_import_from_service_module(import_from_service_module, filename, has_error):
     check_res = _result(import_from_service_module, filename)
     if has_error:
         assert len(check_res) == 1
-        assert ERROR_CODE in list(check_res)[0]
+        assert ERROR_CODE in check_res[0]
     else:
         assert not check_res
 
@@ -71,12 +76,13 @@ def test_import_from_service_module(import_from_service_module, filename, has_er
         (ROOT_MODULE_FILENAME, True),
         (COMMON_MODULE_FILENAME, True),
         (SERVICE_MODULE_FILENAME, False),
+        (TEST_MODULE_FILENAME, False),
     ]
 )
 def test_import_from_nested_service_module(import_from_nested_service_module, filename, has_error):
     check_res = _result(import_from_nested_service_module, filename)
     if has_error:
         assert len(check_res) == 1
-        assert ERROR_CODE in list(check_res)[0]
+        assert ERROR_CODE in check_res[0]
     else:
         assert not check_res

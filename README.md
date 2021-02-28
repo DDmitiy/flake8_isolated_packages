@@ -18,6 +18,7 @@ This *Flake8* plugin is for checking imports isolations.
    
         [flake8]
         isolated_packages = service, tests
+        test_folders = tests
 
 3. Run flake8::
 
