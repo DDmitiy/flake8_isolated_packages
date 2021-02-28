@@ -3,7 +3,7 @@ from typing import Set
 
 import pytest
 
-from flake8_isolated_imports import Plugin
+from flake8_isolated_packages import Plugin
 
 ERROR_CODE = 'FII100'
 ROOT_MODULE_FILENAME = './utils.py'
@@ -14,7 +14,7 @@ SERVICE_MODULE_FILENAME = './service/utils.py'
 def _result(loc: str, filename: str) -> Set[str]:
     tree = ast.parse(loc)
     plugin = Plugin(tree, filename)
-    plugin._isolated_imports = ['service']
+    plugin._isolated_packages = ['service']
     return {f'{line}:{col} {message}' for line, col, message, _ in plugin.run()}
 
 

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "flake8_isolated_imports"
+name = "flake8_isolated_packages"
 version = "0.1.0"
 description = "This Flake8 plugin is for checking imports isolations."
 authors = ["Dudov Dmitry (@ddmitiy)"]

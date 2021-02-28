@@ -12,14 +12,14 @@ MESSAGE = 'FII100 You try to import from another service'
 
 
 class Visitor(ast.NodeVisitor):
-    def __init__(self, filename: str, isolated_imports: List[str]) -> None:
+    def __init__(self, filename: str, isolated_packages: List[str]) -> None:
         self.package_name = self._get_package_name(filename)
         self.errors: List[Tuple[int, int]] = []
-        self.isolated_imports = isolated_imports
+        self.isolated_packages = isolated_packages
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         root_import_package_name = node.module.split('.')[0]
-        if (root_import_package_name in self.isolated_imports
+        if (root_import_package_name in self.isolated_packages
                 and root_import_package_name != self.package_name):
             self.errors.append((node.lineno, node.col_offset))
 
@@ -40,7 +40,7 @@ class Plugin:
     name = __name__
     version = importlib_metadata.version(__name__)
     short_option_name = 'fii'
-    full_option_name = 'isolated_imports'
+    full_option_name = 'isolated_packages'
 
     @classmethod
     def add_options(cls, parser):
@@ -60,7 +60,7 @@ class Plugin:
         Args:
             options (dict): options to be parsed
         """
-        cls._isolated_imports = getattr(options, cls.full_option_name)
+        cls._isolated_packages = getattr(options, cls.full_option_name)
 
     def __init__(self, tree: ast.AST, filename: str) -> None:
         self._filename = filename
@@ -70,7 +70,7 @@ class Plugin:
         """
         Any module from specified package could not be import in another package
         """
-        visitor = Visitor(self._filename, self._isolated_imports)
+        visitor = Visitor(self._filename, self._isolated_packages)
         visitor.visit(self._tree)
         for line, col in visitor.errors:
             yield line, col, MESSAGE, type(self)
