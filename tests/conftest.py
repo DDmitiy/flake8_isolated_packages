@@ -20,3 +20,13 @@ def import_from_service_module() -> str:
 def import_from_nested_service_module() -> str:
     return 'from service.utils import function'
 
+
+@pytest.fixture()
+def local_import():
+    return 'from .utils import function'
+
+
+@pytest.fixture()
+def import_from_dot():
+    return 'from . import function'
+

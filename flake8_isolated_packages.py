@@ -19,7 +19,7 @@ class Visitor(ast.NodeVisitor):
         self.test_folders = test_folders
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
-        if self.package_name in self.test_folders:
+        if self.package_name in self.test_folders or node.level > 0:
             self.generic_visit(node)
             return
 
@@ -32,10 +32,12 @@ class Visitor(ast.NodeVisitor):
 
     @staticmethod
     def _get_package_name(filename) -> Optional[str]:
+        if filename.startswith('./'):
+            filename = filename[2:]
         split_filepath = filename.split('/')
-        if len(split_filepath) < 2:
+        if not len(split_filepath):
             return None
-        package_name = split_filepath[1]
+        package_name = split_filepath[0]
         if package_name.endswith('.py'):
             return None
         return package_name
@@ -47,6 +49,9 @@ class Plugin:
 
     isolated_packages_option_name = 'isolated_packages'
     test_folders_option_name = 'test_folders'
+
+    default_isolated_packages = []
+    default_test_folders = ['tests']
 
     @classmethod
     def add_options(cls, parser):
@@ -60,13 +65,13 @@ class Plugin:
         parser.add_option(
             f'-{cls.isolated_packages_option_name}',
             f'--{cls.isolated_packages_option_name}',
-            default='',
+            default=', '.join(cls.default_isolated_packages),
             **kwargs
         )
         parser.add_option(
             f'-{cls.test_folders_option_name}',
             f'--{cls.test_folders_option_name}',
-            default='tests',
+            default=', '.join(cls.default_test_folders),
             **kwargs
         )
 
@@ -77,8 +82,8 @@ class Plugin:
         Args:
             options (dict): options to be parsed
         """
-        cls._isolated_packages = getattr(options, cls.isolated_packages_option_name)
-        cls._test_folders = getattr(options, cls.test_folders_option_name)
+        cls._isolated_packages = getattr(options, cls.isolated_packages_option_name, cls.default_isolated_packages)
+        cls._test_folders = getattr(options, cls.test_folders_option_name, cls.default_test_folders)
 
     def __init__(self, tree: ast.AST, filename: str) -> None:
         self._filename = filename
