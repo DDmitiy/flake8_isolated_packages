@@ -6,10 +6,10 @@ import pytest
 from flake8_isolated_packages import Plugin
 
 ERROR_CODE = 'FIP100'
-ROOT_MODULE_FILENAME = './utils.py'
-COMMON_MODULE_FILENAME = './common/utils.py'
-SERVICE_MODULE_FILENAME = './service/utils.py'
-TEST_MODULE_FILENAME = './tests/conftest.py'
+ROOT_MODULE_FILENAME = 'utils.py'
+COMMON_MODULE_FILENAME = 'common/utils.py'
+SERVICE_MODULE_FILENAME = 'service/utils.py'
+TEST_MODULE_FILENAME = 'tests/conftest.py'
 
 
 def _result(loc: str, filename: str) -> List[str]:

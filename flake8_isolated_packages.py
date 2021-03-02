@@ -32,10 +32,12 @@ class Visitor(ast.NodeVisitor):
 
     @staticmethod
     def _get_package_name(filename) -> Optional[str]:
+        if filename.startswith('./'):
+            filename = filename[2:]
         split_filepath = filename.split('/')
-        if len(split_filepath) < 2:
+        if not len(split_filepath):
             return None
-        package_name = split_filepath[1]
+        package_name = split_filepath[0]
         if package_name.endswith('.py'):
             return None
         return package_name
@@ -48,27 +50,30 @@ class Plugin:
     isolated_packages_option_name = 'isolated_packages'
     test_folders_option_name = 'test_folders'
 
-    @classmethod
-    def add_options(cls, parser):
-        """Required by flake8
-        add the possible options, called first
-        Args:
-            parser (OptionsManager):
-        """
-        kwargs = {'action': 'store', 'parse_from_config': True,
-                  'comma_separated_list': True}
-        parser.add_option(
-            f'-{cls.isolated_packages_option_name}',
-            f'--{cls.isolated_packages_option_name}',
-            default='',
-            **kwargs
-        )
-        parser.add_option(
-            f'-{cls.test_folders_option_name}',
-            f'--{cls.test_folders_option_name}',
-            default='tests',
-            **kwargs
-        )
+    default_isolated_packages = ['consumer', 'tests']
+    default_test_folders = ['tests']
+
+    # @classmethod
+    # def add_options(cls, parser):
+    #     """Required by flake8
+    #     add the possible options, called first
+    #     Args:
+    #         parser (OptionsManager):
+    #     """
+    #     kwargs = {'action': 'store', 'parse_from_config': True,
+    #               'comma_separated_list': True}
+    #     parser.add_option(
+    #         f'-{cls.isolated_packages_option_name}',
+    #         f'--{cls.isolated_packages_option_name}',
+    #         default='',
+    #         **kwargs
+    #     )
+    #     parser.add_option(
+    #         f'-{cls.test_folders_option_name}',
+    #         f'--{cls.test_folders_option_name}',
+    #         default='tests',
+    #         **kwargs
+    #     )
 
     @classmethod
     def parse_options(cls, options):
@@ -77,8 +82,8 @@ class Plugin:
         Args:
             options (dict): options to be parsed
         """
-        cls._isolated_packages = getattr(options, cls.isolated_packages_option_name)
-        cls._test_folders = getattr(options, cls.test_folders_option_name)
+        cls._isolated_packages = getattr(options, cls.isolated_packages_option_name, cls.default_isolated_packages)
+        cls._test_folders = getattr(options, cls.test_folders_option_name, cls.default_test_folders)
 
     def __init__(self, tree: ast.AST, filename: str) -> None:
         self._filename = filename
