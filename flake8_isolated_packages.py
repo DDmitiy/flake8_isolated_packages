@@ -50,30 +50,30 @@ class Plugin:
     isolated_packages_option_name = 'isolated_packages'
     test_folders_option_name = 'test_folders'
 
-    default_isolated_packages = ['consumer', 'tests']
+    default_isolated_packages = []
     default_test_folders = ['tests']
 
-    # @classmethod
-    # def add_options(cls, parser):
-    #     """Required by flake8
-    #     add the possible options, called first
-    #     Args:
-    #         parser (OptionsManager):
-    #     """
-    #     kwargs = {'action': 'store', 'parse_from_config': True,
-    #               'comma_separated_list': True}
-    #     parser.add_option(
-    #         f'-{cls.isolated_packages_option_name}',
-    #         f'--{cls.isolated_packages_option_name}',
-    #         default='',
-    #         **kwargs
-    #     )
-    #     parser.add_option(
-    #         f'-{cls.test_folders_option_name}',
-    #         f'--{cls.test_folders_option_name}',
-    #         default='tests',
-    #         **kwargs
-    #     )
+    @classmethod
+    def add_options(cls, parser):
+        """Required by flake8
+        add the possible options, called first
+        Args:
+            parser (OptionsManager):
+        """
+        kwargs = {'action': 'store', 'parse_from_config': True,
+                  'comma_separated_list': True}
+        parser.add_option(
+            f'-{cls.isolated_packages_option_name}',
+            f'--{cls.isolated_packages_option_name}',
+            default=', '.join[cls.default_isolated_packages],
+            **kwargs
+        )
+        parser.add_option(
+            f'-{cls.test_folders_option_name}',
+            f'--{cls.test_folders_option_name}',
+            default=', '.join[cls.default_test_folders],
+            **kwargs
+        )
 
     @classmethod
     def parse_options(cls, options):
