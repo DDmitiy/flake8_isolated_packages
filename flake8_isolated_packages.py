@@ -65,13 +65,13 @@ class Plugin:
         parser.add_option(
             f'-{cls.isolated_packages_option_name}',
             f'--{cls.isolated_packages_option_name}',
-            default=', '.join[cls.default_isolated_packages],
+            default=', '.join(cls.default_isolated_packages),
             **kwargs
         )
         parser.add_option(
             f'-{cls.test_folders_option_name}',
             f'--{cls.test_folders_option_name}',
-            default=', '.join[cls.default_test_folders],
+            default=', '.join(cls.default_test_folders),
             **kwargs
         )
 
