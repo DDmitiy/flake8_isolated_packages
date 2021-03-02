@@ -16,9 +16,9 @@ This *Flake8* plugin is for checking imports isolations.
 
 3. Add to file following: 
    
-        [flake8]
-        isolated_packages = service, tests
-        test_folders = tests
+        [flake8]  
+        isolated-packages = service, tests  
+        test-folders = tests
 
 3. Run flake8::
 
@@ -33,5 +33,5 @@ This *Flake8* plugin is for checking imports isolations.
 **isolated_packages**  
 It specifies a list of folders, that cannot be imported outside of their package
 
-**test_folders**
+**test_folders**  
 It specifies a list of folders, that contains tests and in which can be imported something from even isolated packages

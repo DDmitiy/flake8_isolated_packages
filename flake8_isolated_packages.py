@@ -19,7 +19,7 @@ class Visitor(ast.NodeVisitor):
         self.test_folders = test_folders
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
-        if self.package_name in self.test_folders:
+        if self.package_name in self.test_folders or node.level > 0:
             self.generic_visit(node)
             return
 
@@ -45,8 +45,8 @@ class Plugin:
     name = __name__
     version = importlib_metadata.version(__name__)
 
-    isolated_packages_option_name = 'isolated_packages'
-    test_folders_option_name = 'test_folders'
+    isolated_packages_option_name = 'isolated-packages'
+    test_folders_option_name = 'test-folders'
 
     @classmethod
     def add_options(cls, parser):
