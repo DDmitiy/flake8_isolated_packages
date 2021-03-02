@@ -26,12 +26,12 @@ This *Flake8* plugin is for checking imports isolations.
 
 # flake8 codes
 
-* FIP100: You try to import from isolated package`
+* FIP100: You try to import from isolated package
 
 # Settings
 
-**isolated_packages**  
+**isolated-packages**  
 It specifies a list of folders, that cannot be imported outside of their package
 
-**test_folders**  
+**test-folders**  
 It specifies a list of folders, that contains tests and in which can be imported something from even isolated packages
