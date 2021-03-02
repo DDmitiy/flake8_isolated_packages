@@ -45,8 +45,8 @@ class Plugin:
     name = __name__
     version = importlib_metadata.version(__name__)
 
-    isolated_packages_option_name = 'isolated-packages'
-    test_folders_option_name = 'test-folders'
+    isolated_packages_option_name = 'isolated_packages'
+    test_folders_option_name = 'test_folders'
 
     @classmethod
     def add_options(cls, parser):
