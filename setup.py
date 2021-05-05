@@ -9,7 +9,7 @@ with open(path.join(this_directory, 'README.md')) as f:
 setup(
     name='flake8-isolated-packages',
     packages=['./'],
-    version='0.2.1',
+    version='0.2.2',
     license='MIT',
     description='This flake8 plugin is for checking imports isolations.',
     long_description=long_description,
