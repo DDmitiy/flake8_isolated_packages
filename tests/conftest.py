@@ -1,7 +1,7 @@
 import pytest
 
 
-@pytest.fixture
+@pytest.fixture()
 def import_from_common_module() -> str:
     return 'from common import function'
 
@@ -29,4 +29,3 @@ def local_import():
 @pytest.fixture()
 def import_from_dot():
     return 'from . import function'
-

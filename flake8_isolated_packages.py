@@ -12,7 +12,7 @@ MESSAGE = 'FIP100: You try to import from isolated package'
 
 
 class Visitor(ast.NodeVisitor):
-    def __init__(self, filename: str, isolated_packages: List[str], test_folders: List['str']) -> None:
+    def __init__(self, filename: str, isolated_packages: List[str], test_folders: List[str]) -> None:
         self.package_name = self._get_package_name(filename)
         self.errors: List[Tuple[int, int]] = []
         self.isolated_packages = isolated_packages
@@ -23,10 +23,10 @@ class Visitor(ast.NodeVisitor):
             self.generic_visit(node)
             return
 
-        root_import_package_name = node.module.split('.')[0]
-        if (root_import_package_name in self.isolated_packages
-                and root_import_package_name != self.package_name):
-            self.errors.append((node.lineno, node.col_offset))
+        if node.module is not None:
+            root_import_package_name = node.module.split('.')[0]
+            if root_import_package_name in self.isolated_packages and root_import_package_name != self.package_name:
+                self.errors.append((node.lineno, node.col_offset))
 
         self.generic_visit(node)
 
@@ -35,7 +35,7 @@ class Visitor(ast.NodeVisitor):
         if filename.startswith('./'):
             filename = filename[2:]
         split_filepath = filename.split('/')
-        if not len(split_filepath):
+        if not split_filepath:
             return None
         package_name = split_filepath[0]
         if package_name.endswith('.py'):
@@ -50,7 +50,7 @@ class Plugin:
     isolated_packages_option_name = 'isolated_packages'
     test_folders_option_name = 'test_folders'
 
-    default_isolated_packages = []
+    default_isolated_packages: List[str] = []
     default_test_folders = ['tests']
 
     @classmethod
@@ -60,19 +60,18 @@ class Plugin:
         Args:
             parser (OptionsManager):
         """
-        kwargs = {'action': 'store', 'parse_from_config': True,
-                  'comma_separated_list': True}
+        kwargs = {'action': 'store', 'parse_from_config': True, 'comma_separated_list': True}
         parser.add_option(
             f'-{cls.isolated_packages_option_name}',
             f'--{cls.isolated_packages_option_name}',
             default=', '.join(cls.default_isolated_packages),
-            **kwargs
+            **kwargs,
         )
         parser.add_option(
             f'-{cls.test_folders_option_name}',
             f'--{cls.test_folders_option_name}',
             default=', '.join(cls.default_test_folders),
-            **kwargs
+            **kwargs,
         )
 
     @classmethod
@@ -93,7 +92,7 @@ class Plugin:
         """
         Any module from specified package could not be import in another package
         """
-        visitor = Visitor(self._filename, self._isolated_packages, self._test_folders)
+        visitor = Visitor(self._filename, self._isolated_packages, self._test_folders)  # type: ignore
         visitor.visit(self._tree)
         for line, col in visitor.errors:
             yield line, col, MESSAGE, type(self)
