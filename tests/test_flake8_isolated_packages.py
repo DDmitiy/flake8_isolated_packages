@@ -1,3 +1,4 @@
+# pylint:disable=protected-access
 import ast
 from typing import List
 
@@ -15,18 +16,19 @@ TEST_MODULE_FILENAME = 'tests/conftest.py'
 def _result(loc: str, filename: str) -> List[str]:
     tree = ast.parse(loc)
     plugin = Plugin(tree, filename)
-    plugin._isolated_packages = ['service']
-    plugin._test_folders = ['tests']
+    plugin._isolated_packages = ['service']  # type: ignore
+    plugin._test_folders = ['tests']  # type: ignore
     return [f'{line}:{col} {message}' for line, col, message, _ in plugin.run()]
 
 
 @pytest.mark.parametrize(
-    'filename, has_error', [
+    ('filename', 'has_error'),
+    [
         (ROOT_MODULE_FILENAME, False),
         (COMMON_MODULE_FILENAME, False),
         (SERVICE_MODULE_FILENAME, False),
         (TEST_MODULE_FILENAME, False),
-    ]
+    ],
 )
 def test_import_from_common_module(import_from_common_module, filename, has_error):
     check_res = _result(import_from_common_module, filename)
@@ -38,12 +40,13 @@ def test_import_from_common_module(import_from_common_module, filename, has_erro
 
 
 @pytest.mark.parametrize(
-    'filename, has_error', [
+    ('filename', 'has_error'),
+    [
         (ROOT_MODULE_FILENAME, False),
         (COMMON_MODULE_FILENAME, False),
         (SERVICE_MODULE_FILENAME, False),
         (TEST_MODULE_FILENAME, False),
-    ]
+    ],
 )
 def test_import_from_nested_common_module(import_from_nested_common_module, filename, has_error):
     check_res = _result(import_from_nested_common_module, filename)
@@ -55,12 +58,13 @@ def test_import_from_nested_common_module(import_from_nested_common_module, file
 
 
 @pytest.mark.parametrize(
-    'filename, has_error', [
+    ('filename', 'has_error'),
+    [
         (ROOT_MODULE_FILENAME, True),
         (COMMON_MODULE_FILENAME, True),
         (SERVICE_MODULE_FILENAME, False),
         (TEST_MODULE_FILENAME, False),
-    ]
+    ],
 )
 def test_import_from_service_module(import_from_service_module, filename, has_error):
     check_res = _result(import_from_service_module, filename)
@@ -72,12 +76,13 @@ def test_import_from_service_module(import_from_service_module, filename, has_er
 
 
 @pytest.mark.parametrize(
-    'filename, has_error', [
+    ('filename', 'has_error'),
+    [
         (ROOT_MODULE_FILENAME, True),
         (COMMON_MODULE_FILENAME, True),
         (SERVICE_MODULE_FILENAME, False),
         (TEST_MODULE_FILENAME, False),
-    ]
+    ],
 )
 def test_import_from_nested_service_module(import_from_nested_service_module, filename, has_error):
     check_res = _result(import_from_nested_service_module, filename)
@@ -89,12 +94,13 @@ def test_import_from_nested_service_module(import_from_nested_service_module, fi
 
 
 @pytest.mark.parametrize(
-    'filename, has_error', [
+    ('filename', 'has_error'),
+    [
         (ROOT_MODULE_FILENAME, False),
         (COMMON_MODULE_FILENAME, False),
         (SERVICE_MODULE_FILENAME, False),
         (TEST_MODULE_FILENAME, False),
-    ]
+    ],
 )
 def test_local_import(local_import, filename, has_error):
     check_res = _result(local_import, filename)
@@ -106,12 +112,13 @@ def test_local_import(local_import, filename, has_error):
 
 
 @pytest.mark.parametrize(
-    'filename, has_error', [
+    ('filename', 'has_error'),
+    [
         (ROOT_MODULE_FILENAME, False),
         (COMMON_MODULE_FILENAME, False),
         (SERVICE_MODULE_FILENAME, False),
         (TEST_MODULE_FILENAME, False),
-    ]
+    ],
 )
 def test_import_from_dot(import_from_dot, filename, has_error):
     check_res = _result(import_from_dot, filename)
